@@ -5,6 +5,8 @@ from rest_framework.validators import UniqueTogetherValidator
 import api
 from users.models import CustomUser, Subscribe
 
+MAX_RECIPES = 3
+
 
 class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField(
@@ -23,12 +25,10 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
+        request = self.context['request']
+        if request.user.is_anonymous:
             return False
-        return Subscribe.objects.filter(
-            user=request.user, author=obj
-        ).exists()
+        return request.user.following.filter(author=obj).exists()
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
@@ -58,16 +58,14 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, user):
         current_user = self.context.get('current_user')
-        return Subscribe.objects.filter(
-            user=user, author=current_user
-        ).exists()
+        return user.follower.filter(author=current_user).exists()
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
 
     def get_recipes(self, obj):
 
-        recipes = obj.recipes.all()[:3]
+        recipes = obj.recipes.all()[:MAX_RECIPES]
         request = self.context.get('request')
 
         return api.serializers.RecipeSmallSerializer(
