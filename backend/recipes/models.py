@@ -190,7 +190,7 @@ class ShoppingCart(FavoriteAndCartAbstract):
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_cart'
         ordering = ['name']
-    
+
     def __str__(self):
         return self.name
 
