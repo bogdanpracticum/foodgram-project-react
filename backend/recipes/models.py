@@ -4,9 +4,6 @@ from django.db import models
 from api.constants import ITEM_NAME_MAX_LEN, SLUG_MAX_LEN
 from users.models import CustomUser
 
-TIME_TO_COOKING_MIN = 1
-TIME_TO_COOKING_MAX = 32000
-
 
 class Tag(models.Model):
     name = models.CharField(
@@ -95,12 +92,10 @@ class Recipe(models.Model):
         verbose_name='Время приготовления (мин.)',
         validators=(
             MinValueValidator(
-                TIME_TO_COOKING_MIN,
-                message='Время приготовления должно быть больше 1 минуты!'
+                1, message='Время приготовления должно быть больше 1 минуты!'
             ),
             MaxValueValidator(
-                TIME_TO_COOKING_MAX,
-                message='Слишком большое время приготовления'
+                600, message='Слишком большое время приготовления'
             )),
     )
     pub_date = models.DateTimeField(
@@ -134,11 +129,9 @@ class IngredientsInRecipe(models.Model):
     amount = models.PositiveSmallIntegerField(
         validators=(
             MinValueValidator(
-                TIME_TO_COOKING_MIN,
-                message='Количество ингредиентов не может быть меньше 1!'),
+                1, message='Количество ингредиентов не может быть меньше 1!'),
             MaxValueValidator(
-                TIME_TO_COOKING_MAX,
-                message='Количество ингредиентов слишком большое'
+                10000, message='Количество ингредиентов слишком большое'
             )),
     )
 
@@ -151,10 +144,6 @@ class IngredientsInRecipe(models.Model):
                 name='unique_ingredient'
             )
         ]
-        ordering = ['ingredient']
-
-    def __str__(self):
-        return self.name
 
 
 class FavoriteAndCartAbstract(models.Model):
@@ -169,7 +158,6 @@ class FavoriteAndCartAbstract(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Избранное/корзина'
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
@@ -177,10 +165,6 @@ class FavoriteAndCartAbstract(models.Model):
             ),
         )
         abstract = True
-        ordering = ['user']
-
-    def __str__(self):
-        return self.name
 
 
 class ShoppingCart(FavoriteAndCartAbstract):
@@ -189,10 +173,6 @@ class ShoppingCart(FavoriteAndCartAbstract):
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_cart'
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
 
 
 class Favorite(FavoriteAndCartAbstract):
@@ -201,7 +181,3 @@ class Favorite(FavoriteAndCartAbstract):
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
         default_related_name = 'favorites'
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name

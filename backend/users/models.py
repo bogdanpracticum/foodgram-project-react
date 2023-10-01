@@ -63,14 +63,13 @@ class Subscribe(models.Model):
     class Meta:
         constraints = (
             models.UniqueConstraint(
-                fields=('user', 'author'),
-                name="unique_follow",
-                ordering=['-author_id']
+                fields=("user", "author"),
+                name="unique_follow"
             ),
             models.CheckConstraint(
                 check=~models.Q(
-                    author=models.F('user')
-                ), name='self_subscription'
+                    author=models.F("user")
+                ), name="self_subscription"
             ),
         )
 
