@@ -60,13 +60,13 @@ jobs:
         with:
           context: backend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/footgram_backend
+          tags: kaktus150960/footgram_backend:latest
       - name: Push frontend
         uses: docker/build-push-action@v2
         with:
           context: frontend/
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/footgram_frontend
+          tags: kaktus150960/footgram_frontend:latest
   
   deploy:
     runs-on: ubuntu-latest
