@@ -85,7 +85,7 @@ jobs:
           cd /home/yc-user/footgram/
           sudo docker compose -f docker-compose.production.yml stop
           sudo docker container rm footgram-backend-1
-          sudo docker image rm mikedzhin/footgram_backend
+          sudo docker image rm kaktus150960/footgram_backend
           sudo docker compose -f docker-compose.production.yml up --build -d
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
