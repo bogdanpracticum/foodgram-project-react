@@ -10,7 +10,7 @@ services:
       - .env
 
   backend:
-    image: mikedzhin/footgram_backend
+    image: kaktus150960/footgram_backend
     restart: always
 
     volumes:
@@ -22,7 +22,7 @@ services:
       - .env
 
   frontend:
-    image: mikedzhin/footgram_frontend
+    image: kaktus150960/footgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
     env_file:
