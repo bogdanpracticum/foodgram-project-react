@@ -1,13 +1,9 @@
-![Main Kittygram Workflow](https://github.com/MikeDzhin/foodgram-project-react/actions/workflows/main.yml/badge.svg)
-
-
-
 # Социальная сеть "FOOTGRAM - продуктовый помощник"
 ## _Дипломная работа Яндекс Практикум_
 
-## Проект доступен по адресу: https://footgram.servebeer.com
-### Логин администратора: zipperpocket@gmail.com
-### Пароль администратора: 29082023a
+## Проект доступен по адресу: https://bmgramm.ddns.net/
+### Логин администратора: admin@yandex.ru
+### Пароль администратора: admin
 
 ## Стек технологий:
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
@@ -37,7 +33,7 @@
 
 #### 1. Для начала надо клонировать проект к себе на компьютер и перейти в него в командной строке.
 
-> git clone https://github.com/MikeDzhin/foodgram-project-react
+> git clone git@github.com:bogdanpracticum/foodgram-project-react.git
 #### 2. Создаем и активируем виртуальное окружение
 
 > - python -m venv venv
