@@ -118,7 +118,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
 
-        if recipe.recipes.filter(user=user).exists():
+        if model.objects.filter(
+            recipe=recipe,
+            user=user
+        ).exists():
             raise ValidationError('Такой рецепт уже добавлен')
 
         model.objects.create(
