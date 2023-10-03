@@ -139,6 +139,12 @@ class IngredientAddSerializer(serializers.ModelSerializer):
         model = IngredientsInRecipe
         fields = ('id', 'amount')
 
+    def validate_amount(self, value):
+        if value < TIME_TO_COOKING_MIN:
+            raise serializers.ValidationError('Минимальное значение: 1')
+        if value > TIME_TO_COOKING_MAX:
+            raise serializers.ValidationError('Максимальное значение: 32000')
+        return value
 
 class RecipeAddSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
@@ -160,6 +166,10 @@ class RecipeAddSerializer(serializers.ModelSerializer):
     text = serializers.CharField(
         required=False
     )
+    cooking_time = serializers.IntegerField(
+        min_value=TIME_TO_COOKING_MIN,
+        max_value=TIME_TO_COOKING_MAX
+    )
 
     class Meta:
         model = Recipe
@@ -180,14 +190,16 @@ class RecipeAddSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def add_ingredients(self, ingredients, recipe):
+        ingredients_to_create = []
         for ingredient in ingredients:
             amount = ingredient['amount']
             ingredient_id = ingredient['id']
-            ingredients, created = IngredientsInRecipe.objects.get_or_create(
-                recipe=recipe,
-                ingredient=ingredient_id,
-                amount=amount
+            ingredients_to_create.append(
+                IngredientsInRecipe(recipe=recipe, ingredient=ingredient_id,
+                                    amount=amount)
             )
+
+        IngredientsInRecipe.objects.bulk_create(ingredients_to_create)
 
     @transaction.atomic
     def create(self, validated_data):
