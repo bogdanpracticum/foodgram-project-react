@@ -233,21 +233,11 @@ class RecipeAddSerializer(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError('Необходимо указать ингредиент')
 
-        ingredients_list = []
+        ingredients_list = set(item['id'] for item in ingredients)
 
-        for item in ingredients_list:
-            name = item['id']
-
-            if name in ingredients_list:
+        for name in ingredients_list:
+            if name in ingredients_list and len(ingredients_list) > M_I:
                 raise serializers.ValidationError('Такой ингредиент уже есть')
-            ingredients_list.append(name)
-
-            if int(item['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'item': ('Количество ингредиента должно '
-                             'быть больше 0')
-                }
-                )
 
         return data
 
