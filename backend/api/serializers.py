@@ -5,8 +5,12 @@ from django.db import transaction
 from rest_framework import serializers
 
 from recipes.models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
-                            ShoppingCart, Tag)
+                            Tag)
 from users.serializers import CustomUserSerializer
+
+TIME_TO_COOKING_MIN = 1
+TIME_TO_COOKING_MAX = 32000
+M_I = 1
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -122,10 +126,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if not request or request.user.is_anonymous:
             return False
 
-        return ShoppingCart.objects.filter(
-            user=request.user,
-            recipe=obj
-        ).exists()
+        return request.user.shopping_cart.filter(recipe=obj).exists()
 
 
 class IngredientAddSerializer(serializers.ModelSerializer):
@@ -137,6 +138,13 @@ class IngredientAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientsInRecipe
         fields = ('id', 'amount')
+
+    def validate_amount(self, value):
+        if value < TIME_TO_COOKING_MIN:
+            raise serializers.ValidationError('Минимальное значение: 1')
+        if value > TIME_TO_COOKING_MAX:
+            raise serializers.ValidationError('Максимальное значение: 32000')
+        return value
 
 
 class RecipeAddSerializer(serializers.ModelSerializer):
@@ -159,6 +167,10 @@ class RecipeAddSerializer(serializers.ModelSerializer):
     text = serializers.CharField(
         required=False
     )
+    cooking_time = serializers.IntegerField(
+        min_value=TIME_TO_COOKING_MIN,
+        max_value=TIME_TO_COOKING_MAX
+    )
 
     class Meta:
         model = Recipe
@@ -179,14 +191,16 @@ class RecipeAddSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def add_ingredients(self, ingredients, recipe):
+        ingredients_to_create = []
         for ingredient in ingredients:
             amount = ingredient['amount']
             ingredient_id = ingredient['id']
-            ingredients, created = IngredientsInRecipe.objects.get_or_create(
-                recipe=recipe,
-                ingredient=ingredient_id,
-                amount=amount
+            ingredients_to_create.append(
+                IngredientsInRecipe(recipe=recipe, ingredient=ingredient_id,
+                                    amount=amount)
             )
+
+        IngredientsInRecipe.objects.bulk_create(ingredients_to_create)
 
     @transaction.atomic
     def create(self, validated_data):
@@ -219,21 +233,11 @@ class RecipeAddSerializer(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError('Необходимо указать ингредиент')
 
-        ingredients_list = []
+        ingredients_list = set(item['id'] for item in ingredients)
 
-        for item in ingredients_list:
-            name = item['id']
-
-            if name in ingredients_list:
+        for name in ingredients_list:
+            if name in ingredients_list and ingredients_list.count(name) > M_I:
                 raise serializers.ValidationError('Такой ингредиент уже есть')
-            ingredients_list.append(name)
-
-            if int(item['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'item': ('Количество ингредиента должно '
-                             'быть больше 0')
-                }
-                )
 
         return data
 

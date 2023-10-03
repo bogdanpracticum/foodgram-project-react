@@ -52,6 +52,11 @@
 > docker compose up --build
 
 #### 5. Сделать миграции, создать суперпользователя, собрать статику и заполнить в Базе данных таблицу с ингредиентами
-> - docker compose exec backend python manage.py migrate
-> - docker compose exec backend python manage.py collectstatic --no-input
-> - docker compose exec backend python manage.py jsontodb
+> - sudo docker compose exec backend python manage.py migrate // sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+> - sudo docker compose exec backend python manage.py collectstatic --no-input // sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
+> - sudo docker compose exec backend python manage.py jsontodb // sudo docker compose -f docker-compose.production.yml exec backend python manage.py jsontodb
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
+admin@yandex.ru
+
+
+docker compose exec backend python manage.py jsontodb
