@@ -146,6 +146,7 @@ class IngredientAddSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Максимальное значение: 32000')
         return value
 
+
 class RecipeAddSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
