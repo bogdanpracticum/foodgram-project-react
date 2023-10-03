@@ -5,7 +5,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from recipes.models import (Favorite, Ingredient, IngredientsInRecipe, Recipe,
-                            ShoppingCart, Tag)
+                            Tag)
 from users.serializers import CustomUserSerializer
 
 TIME_TO_COOKING_MIN = 1
