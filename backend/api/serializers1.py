@@ -236,7 +236,7 @@ class RecipeAddSerializer(serializers.ModelSerializer):
         ingredients_list = set(item['id'] for item in ingredients)
 
         for name in ingredients_list:
-            if name in ingredients_list and ingredients_list.count(name) > M_I:
+            if name in ingredients_list and len(ingredients_list) > M_I:
                 raise serializers.ValidationError('Такой ингредиент уже есть')
 
         return data
